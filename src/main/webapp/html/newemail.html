@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Expense Request</title>
+    <script>
+        console.log(document.cookie);
+
+        function cancel(){
+            console.log(document.cookie);
+            const Id = document.cookie.split("=")[1];
+            fetch('http://localhost:8080/html/cancel', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id':Id
+                })
+            })
+        }
+
+        function populateDropDown(){
+            fetch('http://localhost:8080/html/manageremployee', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json().then(data => {
+                let receivers = document.getElementById("receivers");
+
+                data.forEach((item) => {
+                    let option = document.createElement("option");
+                    option.value = item.id;
+                    option.innerText = item.firstName + " " + item.lastName + " (" +  item.username + "@workplace.com)";
+
+                    receivers.appendChild(option);
+                });
+            }));
+        }
+
+        function receiverSelected(){
+            let selected = document.getElementById("receivers");
+            selected.value = selected.options[selected.selectedIndex].value;
+            console.log(selected.value);
+        }
+
+    </script>
+</head>
+<body onload="populateDropDown()">
+<form class="form-login" action="/html/newemail" method="post">
+    <input type="hidden" name="id" value="" id="employeeid"/>
+    <script type="text/javascript">
+        document.getElementById("employeeid").setAttribute("value", document.cookie.split("=")[1]);
+    </script>
+    <h1>Compose new email</h1>
+    <label for="receivers">To:</label>
+    <select onchange="receiverSelected()" name="receiver" value="" id="receivers" required autofocus>
+    </select>
+    <br>
+    <label for="inputSubject">Subject:</label>
+    <input type="text" name="subject" id="inputSubject" class="form-control" required>
+    <br>
+    <label for="inputBody">Body</label>
+    <input type="text" name="body" id="inputBody" class="form-control" required>
+    <br>
+    <span>
+        <button id="submit">Submit</button>
+    </span>
+    <p class="mt-5 mb-3 text-muted">© Javier Perez 2020</p>
+</form>
+<span>
+        <button onclick="cancel" id="cancel">Cancel</button>
+    </span>
+</body>
+</html>

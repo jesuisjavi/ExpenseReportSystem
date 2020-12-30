@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Expense Request</title>
+    <script>
+        function cancel(){
+            const Id = document.cookie.split("=")[1];
+            fetch('http://localhost:8080/html/cancel', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id':Id
+                })
+            })
+        }
+    </script>
+</head>
+<body>
+<form class="form-login" action="/html/newemployee" method="post">
+    <input type="hidden" name="id" value="" id="employeeid"/>
+    <input type="hidden" name="job" value="Manager" id=""/>
+    <script type="text/javascript">
+        document.getElementById("employeeid").setAttribute("value", document.cookie.split("=")[1]);
+    </script>
+    <h1>Enter the new employee personal info</h1>
+    <label for="inputFirstName">First Name:</label>
+    <input type="textfield" name="firstname" id="inputFirstName" class="form-control" required>
+    <br>
+    <label for="inputLastName">Last Name:</label>
+    <input type="textfield" name="lastname" id="inputLastName" class="form-control" required>
+    <br>
+    <label for="inputDOB">DOB:</label>
+    <input type="date" name="dob" id="inputDOB" class="form-control" required>
+    <br>
+    <label for="inputUsername">Username:</label>
+    <input type="textfield" name="username" id="inputUsername" class="form-control" required>
+    <br>
+    <label for="inputPassword">Password:</label>
+    <input type="textfield" name="password" id="inputPassword" class="form-control" required>
+    <br>
+    <label for="inputjobPosition">Job Position:</label>
+    <input type="textfield" name="jobposition" id="inputjobPosition" class="form-control" required>
+    <br>
+    <span>
+        <button id="submit">Submit</button>
+    </span>
+    <span>
+        <button onclick="cancel()" id="cancel">Cancel</button>
+    </span>
+    <p class="mt-5 mb-3 text-muted">© Javier Perez 2020</p>
+</form>
+</body>
+</html>

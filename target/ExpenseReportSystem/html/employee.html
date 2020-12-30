@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee</title>
+    <style>
+        .styled-table {
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .styled-table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        body
+        {
+            font-family: 'Encode Sans', sans-serif;
+        }
+
+        .nav-right {
+            float: right;
+        }
+
+    </style>
+    <script type="text/javascript">
+        const Id = document.cookie.split("=")[1];
+
+        function populateLists(){
+            populateEmails();
+            populateRequestLists();
+        }
+
+        function populateEmails(){
+            fetch('http://localhost:8080/html/email', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id':Id
+                })
+            }).then(response => response.json().then(data => {
+                let email = document.getElementById("email");
+                console.log(data);
+                data.forEach((item) => {
+                    let row = document.createElement("tr");
+                    let cell = document.createElement("td");
+                    cell.innerText = item.dob;
+                    row.appendChild(cell);
+
+                    cell = document.createElement("td");
+                    cell.innerText = item.sender + "@workplace.com";
+                    row.appendChild(cell);
+
+                    cell = document.createElement("td");
+                    cell.innerText = item.subject;
+                    row.appendChild(cell);
+
+                    email.appendChild(row);
+                });
+            }));
+        }
+
+        function populateRequestLists() {
+            fetch('http://localhost:8080/html/employeerequest', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id':Id
+                })
+            }).then(response => response.json().then(data => {
+                console.log(data);
+                let pending = document.getElementById("pending");
+                let resolved = document.getElementById("resolved");
+                data.forEach((item) => {
+                    let row = document.createElement("tr");
+                    let cell = document.createElement("td");
+                    cell.innerText = item.dob;
+                    row.appendChild(cell);
+
+                    cell = document.createElement("td");
+                    cell.innerText = item.amount;
+                    row.appendChild(cell);
+
+                    cell = document.createElement("td");
+                    cell.innerText = item.description;
+                    row.appendChild(cell);
+
+                    if (item.status == 'PENDING'){
+                        pending.appendChild(row);
+                    }
+                    else {
+                        cell = document.createElement("td");
+                        cell.innerText = item.status;
+                        row.appendChild(cell);
+
+                        cell = document.createElement("td");
+                        cell.innerText = item.resolver;
+                        row.appendChild(cell);
+
+                        cell = document.createElement("td");
+                        cell.innerText = item.info;
+                        row.appendChild(cell);
+
+                        resolved.appendChild(row);
+                    }
+                });
+
+            }));
+        }
+
+    </script>
+</head>
+<body onload="populateLists()">
+
+    <nav class="navbar">
+        <div class="nav-right" id="options">
+            <form action="/html/personalinfo" method="get">
+                <input type="hidden" name="id" value="" id="personalinfoid"/>
+                <input type="hidden" name="job" value="Employee" id=""/>
+                <button id="personalinfo" type="submit">Personal Information</button>
+
+                <script type="text/javascript">
+                    document.getElementById("personalinfoid").setAttribute("value", document.cookie.split("=")[1]);
+                </script>
+            </form>
+            <span><button onclick="location.href = 'http://localhost:8080/html/'">Logout</button></span>
+        </div>
+    </nav>
+
+    <div>
+        <h1>WorkPlace</h1>
+        <h2>Employee</h2>
+
+        <section>
+            <h2>Email</h2>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody id="email">
+
+                </tbody>
+            </table>
+            <form action="/html/newemail.html" method="post">
+                <input type="hidden" name="id" value="" id="emailemployeeid"/>
+                <button id="newremail" type="submit">Compose Email</button>
+
+                <script type="text/javascript">
+                    document.getElementById("emailemployeeid").setAttribute("value", document.cookie.split("=")[1]);
+                </script>
+            </form>
+        </section>
+
+        <section>
+            <h2>Request Center</h2>
+            <br>
+            <div class="requests">
+                <div class="request-header">
+                    <h4 class="my-0 font-weight-normal">Pending Requests</h4>
+                </div>
+                <div class="request-body">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <div class="requests">
+                <div class="request-header">
+                    <h4 class="my-0 font-weight-normal">Resolved Requests</h4>
+                </div>
+                <div class="request-body">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Resolver</th>
+                                <th>Info</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resolved">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <form action="/html/newrequest" method="get">
+                <input type="hidden" name="id" value="" id="employeeid"/>
+                <input type="hidden" name="job" value="Employee" id="jobid"/>
+                <button id="newrequest" type="submit">Create Request</button>
+
+                <script type="text/javascript">
+                    document.getElementById("employeeid").setAttribute("value", document.cookie.split("=")[1]);
+                </script>
+            </form>
+        </section>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Expense Request</title>
+    <script>
+        console.log(document.cookie);
+
+        function cancel(){
+            console.log(document.cookie);
+            const Id = document.cookie.split("=")[1];
+            fetch('http://localhost:8080/html/cancel', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id':Id
+                })
+            })
+        }
+    </script>
+</head>
+    <body>
+    <form class="form-login" action="/html/newrequest" method="post">
+        <input type="hidden" name="id" value="" id="employeeid"/>
+        <script type="text/javascript">
+            document.getElementById("employeeid").setAttribute("value", document.cookie.split("=")[1]);
+        </script>
+        <h1>Enter the expense request details</h1>
+        <label for="inputAmount">Amount:</label>
+        <input type="number" name="amount" id="inputAmount" class="form-control" required autofocus>
+        <br>
+        <label for="inputDescription">Description:</label>
+        <input type="textfield" name="description" id="inputDescription" class="form-control" required>
+        <br>
+        <span>
+            <button id="submit">Submit</button>
+        </span>
+        <p class="mt-5 mb-3 text-muted">© Javier Perez 2020</p>
+    </form>
+    <span>
+        <button onclick="cancel" id="cancel">Cancel</button>
+    </span>
+    </body>
+</html>

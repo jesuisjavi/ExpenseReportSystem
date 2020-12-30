@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Personal Information</title>
+        <script type="text/javascript">
+            const Id = document.cookie.split("=")[1];
+
+            function populatePersonalInfo(){
+                fetch('http://localhost:8080/html/personalinfo', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        'id':Id
+                    })
+                }).then(response => response.json().then(data => {
+                    document.getElementById("name").innerText += " " + data.firstName + " " + data.lastName;
+                    document.getElementById("dob").innerText += " " + data.dob;
+                    document.getElementById("job").innerText += " " + data.jobPosition;
+                    document.getElementById("username").innerText += " " + data.username;
+                    }));
+            }
+
+            function setChangeUsername(){
+                document.getElementById("changeusername").setAttribute("disabled", true);
+                document.getElementById("changepassword").setAttribute("disabled", true);
+
+                let change = document.getElementById("changes");
+                let label = document.createElement("label");
+                label.innerText = "New Username: ";
+                label.setAttribute("id", "label");
+                change.appendChild(label);
+
+                let text = document.createElement("input");
+                text.setAttribute("type", "textfield");
+                text.setAttribute("id", "newusername");
+                change.appendChild(text);
+
+                let bttn = document.createElement("button");
+                bttn.setAttribute("id", "bttn");
+                change.appendChild(bttn);
+                document.querySelector('#bttn').textContent = "Submit";
+                document.querySelector('#bttn').addEventListener("click", changeUsername, false);
+
+                let cancel = document.createElement("button");
+                cancel.setAttribute("id", "cancel");
+                change.appendChild(cancel);
+                document.querySelector('#cancel').textContent = "Cancel";
+                document.querySelector('#cancel').addEventListener("click", cancelChange, false);
+            }
+
+            function changeUsername(){
+                let username = document.getElementById("newusername").value;
+                if (username.length > 30)
+                    alert("The username cannot be longer than 30 characters");
+                else {
+                    fetch('http://localhost:8080/html/changeusername', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            'id':Id,
+                            'username':username
+                        })
+                    }).then(data => {
+                        console.log(data);
+                        if(1){
+                            alert("Username was changed");
+                            resetDiv();
+                        }
+                        else {
+                            let newUsername = document.getElementById("newusername");
+                            newUsername.innerText = "";
+                            alert("Username already exists. Please type a new one");
+                        }
+                    });
+                }
+            }
+
+            function setChangePassword(){
+                document.getElementById("changeusername").setAttribute("disabled", true);
+                document.getElementById("changepassword").setAttribute("disabled", true);
+
+                let change = document.getElementById("changes");
+                let labelNew = document.createElement("label");
+                labelNew.innerText = "New Password: ";
+                labelNew.setAttribute("id", "labelNew");
+                change.appendChild(labelNew);
+
+                let textNew = document.createElement("input");
+                textNew.setAttribute("type", "textfield");
+                textNew.setAttribute("id", "newpassword");
+                change.appendChild(textNew);
+
+                let labelConfirm = document.createElement("label");
+                labelConfirm.innerText = "Confirm Password: ";
+                labelConfirm.setAttribute("id", "labelConfirm");
+                change.appendChild(labelConfirm);
+
+                let textConfirm = document.createElement("input");
+                textConfirm.setAttribute("type", "textfield");
+                textConfirm.setAttribute("id", "confirmpassword");
+                change.appendChild(textConfirm);
+
+                let bttn = document.createElement("button");
+                bttn.setAttribute("id", "bttn");
+                change.appendChild(bttn);
+                document.querySelector('#bttn').textContent = "Submit";
+                document.querySelector('#bttn').addEventListener("click", changePassword, false);
+
+                let cancel = document.createElement("button");
+                cancel.setAttribute("id", "cancel");
+                change.appendChild(cancel);
+                document.querySelector('#cancel').textContent = "Cancel";
+                document.querySelector('#cancel').addEventListener("click", cancelChange, false);
+            }
+
+            function changePassword(){
+                let password = document.getElementById("newpassword").value;
+                let confirm = document.getElementById("confirmpassword").value;
+
+                if(password != confirm){
+                    alert("Passwords do not match");
+                }
+                else{
+                    fetch('http://localhost:8080/html/changepassword', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            'id':Id,
+                            'password':password
+                        })
+                    }).then(data => {
+                        console.log(data);
+                        alert("Password was changed");
+                        resetDiv();
+                    });
+                }
+            }
+
+            function resetDiv(){
+                document.getElementById("changes").innerHTML = "";
+                document.getElementById("changeusername").removeAttribute("disabled");
+                document.getElementById("changepassword").removeAttribute("disabled");
+            }
+        </script>
+    </head>
+    <body onload="populatePersonalInfo()">
+        <h1>Personal Information</h1>
+        <label id="name">Name: </label>
+        <br>
+        <label id="dob">DOB: </label>
+        <br>
+        <label id="job">Job Position: </label>
+        <br>
+        <label id="username">Username: </label>
+        <br>
+        <span>
+            <button onclick="setChangeUsername()" id="changeusername">Change username</button>
+        </span>
+        <span>
+             <button onclick="setChangePassword()" id="changepassword">Change password</button>
+        </span>
+        <span>
+            <form action="/html/cancel" method="post">
+                <input type="hidden" name="id" value="" id="personalinfoid"/>
+                <button id="personalinfo" type="submit">Done</button>
+
+                <script type="text/javascript">
+                    document.getElementById("personalinfoid").setAttribute("value", document.cookie.split("=")[1]);
+                </script>
+            </form>
+        </span>
+        <div id="changes">
+
+        </div>
+    </body>
+</html>
